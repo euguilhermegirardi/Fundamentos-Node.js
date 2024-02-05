@@ -1,11 +1,10 @@
+import { randomUUID } from 'node:crypto'
 import http from 'node:http'
 import { DataBase } from './database.js'
 import { json } from './middlewares/json.js'
 
 const database = new DataBase()
 
-// request => Readable Stream
-// response => Writable Stream
 const server = http.createServer(async (request, response) => {
   const { method, url } = request
 
@@ -22,7 +21,7 @@ const server = http.createServer(async (request, response) => {
     const { name, email } = request.body
 
     const user = {
-      id: 1,
+      id: randomUUID(),
       name,
       email,
     }
