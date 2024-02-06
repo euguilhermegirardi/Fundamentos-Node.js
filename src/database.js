@@ -21,8 +21,22 @@ export class DataBase {
     fs.writeFile(databasePath, JSON.stringify(this.#database))
   }
 
-  select(table) {
-    const data = this.#database[table] ?? []
+  select(table, search) {
+    let data = this.#database[table] ?? []
+
+    if(search) {
+      data = data.filter(row => {
+        // Object.entries => 
+        // const obj = { a: 1, b: 2, c: 3 }
+        // output => [ [ 'a', 1 ], [ 'b', 2 ], [ 'c', 3 ] ]
+        return Object.entries(search).some(([key, value]) => {
+          // key => 'a'
+          // value => 1
+          return row[key].toLowerCase().includes(value.toLowerCase())
+        })
+      })
+    }
+
     return data
   }
 
@@ -38,6 +52,15 @@ export class DataBase {
     this.#persist()
 
     return data
+  }
+
+  update(table, id, data) {
+    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+    if(rowIndex > -1) {
+      this.#database[table][rowIndex] = { id, ...data }
+      this.#persist()
+    }
   }
 
   delete(table, id) {
